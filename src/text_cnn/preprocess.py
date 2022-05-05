@@ -25,18 +25,16 @@ def load_data():
     train_data: List = []
     test_data: List = []
     batch_size = 64
-    max_len = 700
+    max_len = 100
 
     print("==========loading training data==========")
     with open("..//data//train.txt", encoding='utf-8') as train_file:
         for line in tqdm(train_file):
             line = line.split()
             vec = np.zeros([max_len, vec_len], dtype=float)
-            for idx in range(1, len(line)):
+            for idx in range(1, min(len(line), max_len)):
                 if model.has_index_for(line[idx]):
-                    v = model[line[idx]]
-                    for j in range(idx, max_len, idx):
-                        vec[j - 1] = v
+                    vec[idx - 1] = model[line[idx]]
             vec = torch.from_numpy(vec).float()
             label = torch.from_numpy(np.array(int(line[0]))).long()
             train_data.append((vec, label))

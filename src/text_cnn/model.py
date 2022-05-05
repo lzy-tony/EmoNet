@@ -3,22 +3,22 @@ from torch import nn
 import torch.nn.functional as F
 
 
-class textCNN(nn.Module):
-    def __init__(self, embed_dim, class_num, dropout, kernel_num, kernel_sizes):
-        super(textCNN, self).__init__()
+class TextCNN(nn.Module):
+    def __init__(self, config):
+        super(TextCNN, self).__init__()
         # params
-        D = embed_dim
+        D = config.emb_dim
         Cin = 1
-        Cout = kernel_num
-        Ks = kernel_sizes
+        Cout = config.kernel_num
+        Ks = config.kernels
 
         # conv layers
         self.convs = nn.ModuleList([nn.Conv2d(Cin, Cout, (K, D)) for K in Ks])
 
         # fc layer
-        self.dropout = nn.Dropout(dropout)
-        self.fc = nn.Linear(len(Ks)*Cout, class_num)
-        self.softmax = nn.Softmax(dim=1)
+        self.dropout = nn.Dropout(config.dropout_rate)
+        self.fc = nn.Linear(len(Ks)*Cout, config.class_num)
+        # self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):  # input: (N, W, D)
         x = x.unsqueeze(1)  # unsqueezed: (N, Cin, W, D)
@@ -28,6 +28,6 @@ class textCNN(nn.Module):
                   for w in conv_x]  # pooled: (N, Cout) * len(Ks)
         fc_x = torch.cat(pool_x, dim=1)
         fc_x = self.dropout(fc_x)
-        fc_x = self.fc(fc_x)
-        logit = self.softmax(fc_x)
+        logit = self.fc(fc_x)
+        # logit = self.softmax(fc_x)
         return logit
