@@ -34,7 +34,7 @@ def main(m: str):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     loss_fn = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=config.lr, weight_decay=config.weight_decay)
-    training.main(train_dataloader, test_dataloader, model, device, loss_fn, optimizer)
+    training.main(train_dataloader, test_dataloader, model, device, loss_fn, optimizer, config)
 
 
 if __name__ == '__main__':

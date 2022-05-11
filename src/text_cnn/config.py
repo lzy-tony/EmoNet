@@ -1,4 +1,5 @@
 class Config:
+    name = "Text-CNN"
     batch_size = 64
     lr = 1e-3
 

@@ -130,6 +130,8 @@ dmypy.json
 
 #data
 /data
+/res
+/models
 
 #IDE
 /.idea

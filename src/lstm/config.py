@@ -1,4 +1,5 @@
 class Config:
+    name = "LSTM"
     batch_size = 64
     lr = 1e-3
 
