@@ -7,15 +7,16 @@ class MLP(nn.Module):
         super(MLP, self).__init__()
         self.embed_dim = config.emb_dim
         self.flatten = nn.Flatten()
-        self.linear_relu_stack = nn.Sequential(
-            nn.Linear(config.emb_dim * config.max_len, config.hidden_size1),
-            nn.ReLU(),
-            nn.Dropout(config.dropout_rate),
-            nn.Linear(config.hidden_size1, config.hidden_size2),
-            nn.ReLU(),
-            nn.Dropout(config.dropout_rate),
-            nn.Linear(config.hidden_size2, config.class_num),
-        )
+
+        modules = [nn.Linear(config.emb_dim * config.max_len, config.hidden_size),
+                   nn.ReLU(),
+                   nn.Dropout(config.dropout_rate)]
+        for i in range(config.hidden_num - 1):
+            modules.append(nn.Linear(config.hidden_size, config.hidden_size))
+            modules.append(nn.ReLU())
+            modules.append(nn.Dropout(config.dropout_rate))
+        modules.append(nn.Linear(config.hidden_size, config.class_num))
+        self.linear_relu_stack = nn.Sequential(*modules)
 
     def forward(self, x):
         x = self.flatten(x)

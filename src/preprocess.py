@@ -60,5 +60,26 @@ def load_data():
     return train_dataloader, test_dataloader
 
 
+def load_validator():
+    model = KeyedVectors.load_word2vec_format("..//data//wiki_word2vec_50.bin", binary=True)
+    batch_size = 64
+    max_len = 100
+    validation_data: List = []
+    print("==========loading validation data==========")
+    with open("..//data//validation.txt", encoding='utf-8') as train_file:
+        for line in tqdm(train_file):
+            line = line.split()
+            vec = np.zeros([max_len, vec_len], dtype=float)
+            for idx in range(1, min(len(line), max_len)):
+                if model.has_index_for(line[idx]):
+                    vec[idx - 1] = model[line[idx]]
+            vec = torch.from_numpy(vec).float()
+            label = torch.from_numpy(np.array(int(line[0]))).long()
+            validation_data.append((vec, label))
+    validation_dataset = TextDataset(validation_data)
+    validation_dataloader = DataLoader(validation_dataset, batch_size=batch_size, shuffle=True)
+    return validation_dataloader
+
+
 if __name__ == '__main__':
     load_data()

@@ -53,7 +53,7 @@ def test(dataloader, model, device, loss_fn):
 def main(train_dataloader, test_dataloader, model, device, loss_fn, optimizer, config):
     mpl.rcParams['font.sans-serif'] = ['FangSong']
     mpl.rcParams['axes.unicode_minus'] = False
-    epoch = 10
+    epoch = 20
     acc_list = [0]
     loss_list = []
     f_list = []
@@ -63,6 +63,7 @@ def main(train_dataloader, test_dataloader, model, device, loss_fn, optimizer, c
         acc_list.append(accuracy)
         loss_list.append(loss)
         f_list.append(f)
+    torch.save(model.state_dict(), '..\\models\\' + config.name + ".pth")
     plt.title(f"{config.name} 测试集正确率")
     plt.plot(range(epoch + 1), acc_list)
     plt.savefig("..\\res\\" + config.name + "_accuracy.svg")
@@ -75,3 +76,27 @@ def main(train_dataloader, test_dataloader, model, device, loss_fn, optimizer, c
     plt.plot(range(1, epoch + 1), f_list)
     plt.savefig("..\\res\\" + config.name + "_f.svg")
     plt.close()
+
+
+def cmp_params(train_dataloader, test_dataloader, model_list,
+               device, loss_fn, optimizer_list, config_list, label_list, c):
+    mpl.rcParams['font.sans-serif'] = ['FangSong']
+    mpl.rcParams['axes.unicode_minus'] = False
+    for model, optimizer, config, label in zip(model_list, optimizer_list, config_list, label_list):
+        epoch = 20
+        acc_list = [0]
+        for i in range(epoch):
+            print(f"running epoch {i} in label {label}")
+            train(train_dataloader, model, device, loss_fn, optimizer)
+            loss, accuracy, f = test(test_dataloader, model, device, loss_fn)
+            acc_list.append(accuracy)
+        plt.plot(range(epoch + 1), acc_list, label=label)
+    plt.legend()
+    plt.title(f"{config_list[0].name} 测试集正确率 - 参数 {c} 比较")
+    plt.savefig("..\\res\\" + config_list[0].name + "_" + c + ".svg")
+    plt.close()
+
+
+def validate(validate_dataloader, model, device, loss_fn):
+    loss, accuracy, f = test(validate_dataloader, model, device, loss_fn)
+    print(f"on validation set, loss = {loss}, accuracy = {accuracy}, f = {f}")
