@@ -103,7 +103,7 @@ def main(m: str, c: str, v: str):
     loss_fn = nn.CrossEntropyLoss()
     if v == 'true':
         validate_dataloader, model = validate(m)
-        training.validate(validate_dataloader, model, device, loss_fn)
+        training.validate(validate_dataloader, model, device, loss_fn, m)
     elif c == 'false':
         config, train_dataloader, test_dataloader, model = load(m)
         optimizer = optim.Adam(model.parameters(), lr=config.lr, weight_decay=config.weight_decay)

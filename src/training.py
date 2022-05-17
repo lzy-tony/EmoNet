@@ -1,7 +1,10 @@
 import torch
 import pylab as mpl
+import hiddenlayer as hl
 from matplotlib import pyplot as plt
 from ignite.metrics import Precision, Recall
+
+import text_cnn.model, text_cnn.config
 
 
 def train(dataloader, model, device, loss_fn, optimizer):
@@ -97,6 +100,10 @@ def cmp_params(train_dataloader, test_dataloader, model_list,
     plt.close()
 
 
-def validate(validate_dataloader, model, device, loss_fn):
+def validate(validate_dataloader, model, device, loss_fn, m):
     loss, accuracy, f = test(validate_dataloader, model, device, loss_fn)
     print(f"on validation set, loss = {loss}, accuracy = {accuracy}, f = {f}")
+    tensor = torch.zeros(1, 100, 50)
+    hl_graph = hl.build_graph(model, tensor)
+    hl_graph.theme = hl.graph.THEMES["blue"].copy()
+    hl_graph.save("..\\models\\" + m + "_graph.png")
